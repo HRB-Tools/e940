@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<title>ez lul</title>
+<body>
+    <input type="file" id="fileinput">
+    <button id="btn">Convert!</button>
+    <script>var txt = [], mt940 = [];
+function csvTo940(a){
+    let arr940 = [];
+    function fillA(a){
+    function bic(par1, par2){
+			let temp1 = par1;
+			let temp2 = par2;
+			//console.log(par1 + ' ' + par2)
+			 //k = (/BIC:[A-Z]*/).test(temp1) ? temp1.slice(5,-1) : temp2; // BLZ/BIC
+			k = (/^BIC:[A-Z]+$/).test(temp1) ? temp1.slice(5,-1) : temp2;
+			 console.log(k);
+			return k;
+		}
+		function iban(par1, par2){
+			//console.log(par1 + ' ' + par2)
+			let temp1 = par1;
+			let temp2 = par2;
+			let k = (/^IBAN[^A-Za-z]:[A-Z]{2}[0-9]*$/).test(temp1) ? temp1.slice(6,-1) : temp2;
+			console.log(k);
+			return k;
+		}
+        b[0] = bic(a[12], a[2]); // BLZ/BIC
+        b[1] = iban(a[13], a[3]); // Kto./IBAN
+        b[5] = a[26]; // Buchungsdatum
+        b[6] = a[7]; // Umsatz/Saldo
+    }
+    for ( let i = 0; i < a.length; i++ ){
+        var b = new Array(34);
+		b.fill('');
+        fillA(a[i]);
+        arr940.push(b);
+    }
+	console.log(arr940);
+    return arr940;
+}
+function init(){
+    document.querySelector('#btn').addEventListener('click', function(){document.querySelector('#fileinput').click();});
+    document.querySelector('#fileinput').addEventListener('change', function(){
+        csvReader.readAsText(this.files[0]);
+    });
+    let csvReader = new FileReader();
+    csvReader.addEventListener('loadend', function() {
+        let a = this.result;
+        let rows = a.split('\n');
+		//console.log(rows);
+        for (let i = 0; i < rows.length; i++) {
+            txt.push(rows[i].split(';'));
+        }
+        mt940 = csvTo940(txt);
+        saveCSV(csvify(mt940));
+    });
+}
+function csvify(arr2D){
+    let rawtext = '';
+    for ( var i = 1; i < arr2D.length-1; i++ ) {
+        let row = '';
+        for ( let j = 0; j < arr2D[i].length; j++ ) {
+            row += arr2D[i][j] + ';';
+        }
+        rawtext += row + '\n';
+    }
+    return rawtext;
+}
+function saveCSV(a){
+    var arrBlob = new Blob([a], {type: 'text/csv'});
+    console.log("saveCSV, arrBlob: " + arrBlob);
+    var url = URL.createObjectURL(arrBlob);
+    var link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'Export.csv');
+    link.click();
+}
+document.onreadystatechange = function(){
+    if ( document.readyState == "complete" ) {
+        init();
+    }
+}</script>
+</body>
+</html>
