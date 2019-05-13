@@ -6,30 +6,19 @@
     <button id="btn">Convert!</button>
     <script>var txt = [], mt940 = [];
 function csvTo940(a){
-    let arr940 = [];
-    function fillA(a){
-    function bic(par1, par2){
-			let temp1 = par1;
-			let temp2 = par2;
-			//console.log(par1 + ' ' + par2)
-			 //k = (/BIC:[A-Z]*/).test(temp1) ? temp1.slice(5,-1) : temp2; // BLZ/BIC
-			k = (/^BIC:[A-Z]+$/).test(temp1) ? temp1.slice(5,-1) : temp2;
-			 console.log(k);
-			return k;
-		}
-		function iban(par1, par2){
-			//console.log(par1 + ' ' + par2)
-			let temp1 = par1;
-			let temp2 = par2;
-			let k = (/^IBAN[^A-Za-z]:[A-Z]{2}[0-9]*$/).test(temp1) ? temp1.slice(6,-1) : temp2;
-			console.log(k);
-			return k;
-		}
-        b[0] = bic(a[12], a[2]); // BLZ/BIC
-        b[1] = iban(a[13], a[3]); // Kto./IBAN
-        b[5] = a[26]; // Buchungsdatum
-        b[6] = a[7]; // Umsatz/Saldo
-    }
+  let arr940 = [];
+  function fillA(a){
+    function bic(param1, param2){
+		  return (/^BIC:[A-Z]+$/).test(param1) ? param1.slice(5,-1) : param2;
+	  }
+	  function iban(param1, param2){
+		  return (/^IBAN[^A-Za-z]:[A-Z]{2}[0-9]*$/).test(param1) ? param1.slice(6,-1) : param2;
+	  }
+  b[0] = bic(a[12], a[2]); // BLZ/BIC
+  b[1] = iban(a[13], a[3]); // Kto./IBAN
+  b[5] = a[26]; // Buchungsdatum
+  b[6] = a[7]; // Umsatz/Saldo
+ }
     for ( let i = 0; i < a.length; i++ ){
         var b = new Array(34);
 		b.fill('');
@@ -37,7 +26,7 @@ function csvTo940(a){
         arr940.push(b);
     }
 	console.log(arr940);
-    return arr940;
+  return arr940;
 }
 function init(){
     document.querySelector('#btn').addEventListener('click', function(){document.querySelector('#fileinput').click();});
@@ -46,16 +35,16 @@ function init(){
     });
     let csvReader = new FileReader();
     csvReader.addEventListener('loadend', function() {
-        let a = this.result;
-        let rows = a.split('\n');
-		//console.log(rows);
-        for (let i = 0; i < rows.length; i++) {
-            txt.push(rows[i].split(';'));
-        }
-        mt940 = csvTo940(txt);
-        saveCSV(mt940
-		.map( el=>el.join(';') )
-		.join('\r\n'));
+        saveCSV(
+          csvTo940(
+            this
+              .result
+              .split('\n')
+              .map( el => el.split(';') );
+          )
+		      .map( el => el.join(';') )
+		      .join('\r\n')
+        );
     });
 }
 function saveCSV(a){
