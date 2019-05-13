@@ -53,19 +53,10 @@ function init(){
             txt.push(rows[i].split(';'));
         }
         mt940 = csvTo940(txt);
-        saveCSV(csvify(mt940));
+        saveCSV(mt940
+		.map( el=>el.join(';') )
+		.join('\r\n'));
     });
-}
-function csvify(arr2D){
-    let rawtext = '';
-    for ( var i = 1; i < arr2D.length-1; i++ ) {
-        let row = '';
-        for ( let j = 0; j < arr2D[i].length; j++ ) {
-            row += arr2D[i][j] + ';';
-        }
-        rawtext += row + '\n';
-    }
-    return rawtext;
 }
 function saveCSV(a){
     var arrBlob = new Blob([a], {type: 'text/csv'});
